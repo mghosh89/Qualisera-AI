@@ -8,3 +8,4 @@ data/synthetic/*.csv
 data/synthetic/*.json
 *.log
 .DS_Store
+synthea-with-dependencies.jar
