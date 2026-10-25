@@ -3,14 +3,17 @@ CuraOps AI - Synthetic Data Loader
 Loads and prepares Synthea-generated data for QA validation
 """
 import pandas as pd
-import os
 from pathlib import Path
 
 class SyntheticDataLoader:
     """Loads synthetic healthcare data from Synthea CSV exports."""
     
-    def __init__(self, data_dir: str = "data/synthetic"):
-        self.data_dir = Path(data_dir)
+    def __init__(self, data_dir: str | Path | None = None):
+        self.data_dir = (
+            Path(data_dir)
+            if data_dir is not None
+            else Path(__file__).resolve().parents[2] / "data" / "synthetic"
+        )
         
     def load_patients(self) -> pd.DataFrame:
         """Load patient demographics."""
