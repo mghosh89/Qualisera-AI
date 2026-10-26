@@ -1,15 +1,27 @@
-## 📖 Overview
+## 🔬 Novelty & Contribution to the Field
 
-**CuraOps AI** is an innovative MLOps Quality Assurance framework addressing a critical national challenge: **the safe deployment of AI in U.S. healthcare**.
+### Addressing Identified Research Gaps
 
-While artificial intelligence holds transformative potential for clinical diagnostics and patient outcomes, its adoption is severely bottlenecked by the lack of standardized, privacy-compliant testing methodologies. Hospitals cannot safely validate AI models without risking HIPAA violations, while health-tech startups struggle with model drift and API failures in production.
+This work directly addresses the critical research gap identified by Pileggi & Liu (2026) in their comprehensive review of synthetic data applications:
 
-CuraOps AI solves this by providing a **synthetic-data-driven QA architecture** that enables rigorous testing, validation, and monitoring of healthcare AI systems—without ever exposing real patient data.
+> "The most significant limitations emerged from our analysis is a fundamental lack of 
+> **engineering approach** to synthetic data beyond 'guidelines'... There is no principled 
+> approach for evaluation, validation criteria, and quality assurance." [1]
 
-### National Impact
-- **Reduces Clinical Risk:** Prevents dangerous AI hallucinations through pre-production QA
-- **Ensures Regulatory Compliance:** Provides repeatable HIPAA-safe testing protocols
-- **Accelerates Innovation:** Removes administrative barriers to AI deployment in hospitals
-- **Standardizes Best Practices:** Creates an open-source blueprint for healthcare MLOps
+**CuraOps AI provides:**
+1. ✅ A **concrete engineering framework** for synthetic data in healthcare AI QA
+2. ✅ **Pre-configured validation criteria** using Great Expectations with clinical safety rules
+3. ✅ **Automated quality assurance pipelines** integrating Synthea, FastAPI, pytest, and MLflow
+4. ✅ **Open-source implementation** with Docker containerization for operational deployment
 
-This framework represents an original contribution to U.S. healthcare infrastructure, combining 10+ years of QE expertise with advanced AI/MLOps architecture to solve a problem of national importance.
+### Distinct from Existing Work
+
+| Existing Work | Focus | CuraOps AI Difference |
+|---|---|---|
+| Literature Reviews [1] | Theoretical mapping of synthetic data applications | **Working implementation** of engineering framework |
+| IoT Security Monitoring [2] | Data integrity for medical devices | **AI/ML model QA** for clinical decision support |
+| General MLOps Tools | Production monitoring with real data | **Synthetic-first, pre-production QA** with zero PHI |
+
+**References:**
+[1] Pileggi, S.F. & Liu, S. (2026). Synthetic Data in a Data-Intensive World: A Literature Review. Preprints.org
+[2] Moustafa, I.G. et al. (2026). Cybersecurity at the Healthcare Fan-In: Integrity Monitoring for Multi-Hospital IoT Command Centers. IEEE.
