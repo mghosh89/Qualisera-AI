@@ -80,8 +80,8 @@ We are committed to fostering an open, welcoming, and respectful environment. By
 If you have questions about the architecture, want to propose a major feature, or are a hospital/health-tech organization interested in a pilot partnership, please reach out!
 
 *   **Open a Discussion:** Use the [GitHub Discussions](https://github.com/mghosh89/CuraOps-AI/discussions) tab.
-*   **Connect on LinkedIn:** ---
-*   **Email:** moumita150489@gmail.com
+*   **Connect on LinkedIn:** TBD
+*   **Email:** TBD
 
 ---
 
