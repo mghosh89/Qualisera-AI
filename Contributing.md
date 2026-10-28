@@ -8,7 +8,7 @@ Our mission is to ensure safe, compliant, and drift-free AI deployments in clini
 
 ## 👤 About the Maintainer
 
-This project is led by **[Your Name]**, a Quality Engineering (QE) Lead with 10+ years of experience in API and mobile testing, an MS in Information Systems, and a Post-Graduate degree in Artificial Intelligence. 
+This project is led by Moumita Ghosh, a Quality Engineering (QE) Lead with 10+ years of experience in API and mobile testing, an MS in Information Systems, and a Post-Graduate degree in Artificial Intelligence. 
 
 Currently transitioning into **Azure AI/MLOps Architecture**, I built CuraOps AI to bridge the gap between rigorous software quality assurance and the unique, high-stakes demands of healthcare AI deployment. I welcome collaboration from professionals who share a passion for building robust, privacy-first, and clinically safe technology.
 
