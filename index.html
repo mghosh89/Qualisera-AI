@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraOps AI | Safe, Compliant Healthcare MLOps</title>
+    <meta name="description" content="CuraOps AI is a synthetic-data-driven MLOps QA framework ensuring safe, HIPAA-compliant, and drift-free AI deployments in clinical environments.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #0ea5e9;
+            --accent-hover: #0284c7;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --text: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background-color: var(--bg);
+            scroll-behavior: smooth;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { color: var(--primary); line-height: 1.2; font-weight: 700; }
+        h1 { font-size: 3.5rem; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+        h2 { font-size: 2.25rem; margin-bottom: 1rem; text-align: center; }
+        h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; color: var(--text-light); }
+        .text-center { text-align: center; }
+        .section-subtitle { font-size: 1.125rem; max-width: 700px; margin: 0 auto 3rem; text-align: center; }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        section { padding: 6rem 0; }
+        .bg-alt { background-color: var(--bg-alt); }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+            z-index: 1000; padding: 1rem 0;
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+        .btn {
+            display: inline-block; padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+            text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; border: none;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-outline { border: 2px solid var(--border); color: var(--primary); background: transparent; }
+        .btn-outline:hover { border-color: var(--primary); }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 0 6rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            text-align: center;
+        }
+        .hero h1 { max-width: 900px; margin-left: auto; margin-right: auto; }
+        .hero p { font-size: 1.25rem; max-width: 700px; margin: 0 auto 2.5rem; }
+        .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Features Grid */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card {
+            background: var(--bg); padding: 2rem; border-radius: 1rem;
+            border: 1px solid var(--border); transition: all 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: var(--accent); }
+        .icon-box {
+            width: 50px; height: 50px; background: #e0f2fe; border-radius: 0.75rem;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;
+        }
+        .icon-box svg { width: 24px; height: 24px; stroke: var(--accent); }
+
+        /* Architecture Flow */
+        .flow-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 3rem; }
+        .flow-step {
+            flex: 1; min-width: 150px; background: var(--bg); padding: 1.5rem;
+            border-radius: 0.75rem; border: 1px solid var(--border); text-align: center; position: relative;
+        }
+        .flow-step h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+        .flow-step p { font-size: 0.875rem; margin: 0; }
+        .flow-arrow { font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+
+        /* Impact Section */
+        .impact-box {
+            background: var(--primary); color: white; padding: 3rem; border-radius: 1rem;
+            text-align: center; margin-top: 2rem;
+        }
+        .impact-box h3 { color: white; font-size: 1.5rem; margin-bottom: 1rem; }
+        .impact-box p { color: #cbd5e1; font-size: 1.125rem; }
+
+        /* Founder Section */
+        .founder-card {
+            display: flex; align-items: center; gap: 3rem; background: var(--bg);
+            padding: 3rem; border-radius: 1rem; border: 1px solid var(--border);
+        }
+        .founder-avatar {
+            width: 120px; height: 120px; background: var(--accent); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-size: 3rem; font-weight: 700; flex-shrink: 0;
+        }
+        .founder-info h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .founder-title { color: var(--accent); font-weight: 600; margin-bottom: 1rem; display: block; }
+
+        /* Footer */
+        footer { background: var(--primary); color: #94a3b8; padding: 3rem 0; text-align: center; }
+        footer a { color: white; text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.75rem; }
+            .nav-links { display: none; }
+            .founder-card { flex-direction: column; text-align: center; }
+            .flow-arrow { transform: rotate(90deg); margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">CuraOps<span>AI</span></a>
+            <ul class="nav-links">
+                <li><a href="#problem">The Problem</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#founder">About</a></li>
+            </ul>
+            <a href="https://github.com/YOUR_USERNAME/CuraOps-AI" target="_blank" class="btn btn-primary">View on GitHub</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Ensuring Safe, Compliant, and Drift-Free AI in Healthcare</h1>
+            <p>CuraOps AI is an open-source, synthetic-data-driven MLOps QA framework. We enable hospitals and health-tech teams to validate, monitor, and deploy clinical AI models with zero PHI exposure.</p>
+            <div class="hero-btns">
+                <a href="https://github.com/YOUR_USERNAME/CuraOps-AI" target="_blank" class="btn btn-primary">Explore the Framework</a>
+                <a href="#architecture" class="btn btn-outline">See How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section id="problem">
+        <div class="container">
+            <h2>The Healthcare AI Bottleneck</h2>
+            <p class="section-subtitle">Hospitals want to deploy AI, but critical roadblocks prevent safe adoption.</p>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="icon-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                    </div>
+                    <h3>HIPAA & Privacy Risks</h3>
+                    <p>Testing AI models on real patient data violates HIPAA and exposes institutions to massive legal liability.</p>
+                </div>
+                <div class="card">
+                    <div class="icon-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                    </div>
+                    <h3>Silent Model Drift</h3>
+                    <p>AI accuracy degrades over time as patient demographics change, leading to dangerous clinical hallucinations.</p>
+                </div>
+                <div class="card">
+                    <div class="icon-box">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+                    </div>
+                    <h3>API Interoperability</h3>
+                    <p>Legacy EHR systems and modern AI endpoints frequently fail to communicate, causing critical data pipeline breaks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Solution -->
+    <section id="solution" class="bg-alt">
+        <div class="container">
+            <h2>The CuraOps AI Solution</h2>
+            <p class="section-subtitle">A standardized, privacy-first testing pipeline that allows health-tech teams to validate clinical AI models using 100% synthetic data.</p>
+            <div class="grid-3">
+                <div class="card">
+                    <h3>🛡️ Synthetic-First Architecture</h3>
+                    <p>Generates realistic, de-identified patient histories using Synthea™. Guarantees zero PHI exposure during the entire QA phase.</p>
+                </div>
+                <div class="card">
+                    <h3>🩺 Clinical Safety Gates</h3>
+                    <p>Pre-configured Great Expectations validation suites enforce medical boundary checks (e.g., heart rate 40-180 bpm) before data hits the model.</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Automated MLOps Monitoring</h3>
+                    <p>Integrates MLflow and automated pytest suites to detect model drift, validate API latency (<200ms), and ensure continuous reliability.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture -->
+    <section id="architecture">
+        <div class="container">
+            <h2>How It Works</h2>
+            <p class="section-subtitle">An end-to-end, cloud-agnostic MLOps pipeline optimized for healthcare compliance.</p>
+            
+            <div class="flow-container">
+                <div class="flow-step">
+                    <h4>1. Data Generation</h4>
+                    <p>Synthea™ generates HL7 FHIR synthetic patient records.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <h4>2. QA Validation</h4>
+                    <p>Great Expectations enforces clinical safety boundaries.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <h4>3. Mock Inference</h4>
+                    <p>FastAPI tests the AI model's predictions and latency.</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <h4>4. Drift Monitoring</h4>
+                    <p>MLflow tracks distributions and alerts on model decay.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- National Importance / Impact -->
+    <section class="bg-alt">
+        <div class="container">
+            <h2>National Importance & Impact</h2>
+            <div class="impact-box">
+                <h3>Solving a Critical U.S. Healthcare Infrastructure Gap</h3>
+                <p>CuraOps AI directly addresses the "fundamental lack of engineering approach" to synthetic data identified in recent peer-reviewed literature (Pileggi & Liu, 2026). By providing an open-source, pre-production QA framework, we accelerate safe AI adoption, reduce clinical risk, and ensure strict HIPAA compliance for hospitals nationwide.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Founder -->
+    <section id="founder">
+        <div class="container">
+            <h2>About the Founder</h2>
+            <div class="founder-card">
+                <div class="founder-avatar">MG</div>
+                <div class="founder-info">
+                    <h3>Moumita Ghosh</h3>
+                    <span class="founder-title">Lead Architect & Quality Engineering (QE) Lead</span>
+                    <p>CuraOps AI is architected by a seasoned QE Lead with <strong>10+ years of experience</strong> in API and mobile testing, holding an <strong>MS in Information Systems</strong> and a <strong>Post-Graduate degree in Artificial Intelligence</strong>. Currently transitioning into Azure AI/MLOps Architecture, [Your Name] built this framework to bridge the gap between rigorous software quality assurance and the high-stakes demands of clinical AI deployment.</p>
+                    <a href="mailto:YOUR_EMAIL@example.com" class="btn btn-outline" style="margin-top: 1rem;">Get in Touch</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p style="color: #94a3b8; margin-bottom: 1rem;">&copy; 2026 CuraOps AI. Open-source under the MIT License.</p>
+            <p style="color: #94a3b8;">
+                <a href="https://github.com/mghosh89/CuraOps-AI" target="_blank">GitHub</a> &bull; 
+                <a href="https://www.linkedin.com/in/YOUR_LINKEDIN" target="_blank">LinkedIn</a> &bull; 
+                <a href="mailto:xxx">Contact</a>
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
