@@ -5,17 +5,20 @@ Validates synthetic patient data against clinical safety rules.
 from datetime import date
 
 import pandas as pd
-from data_loader import SyntheticDataLoader
+from .data_loader import SyntheticDataLoader
 
 class HealthcareDataValidator:
     """Validates healthcare data for clinical safety and schema compliance."""
     
-    def __init__(self):
-        self.loader = SyntheticDataLoader()
+    def __init__(self, data_dir=None):
+        self.loader = SyntheticDataLoader(data_dir)
     
     def validate_patient_data(self) -> dict:
         """Validate patient demographics against clinical rules."""
-        df = self.loader.load_patients()
+        return self.validate_patient_dataframe(self.loader.load_patients())
+
+    def validate_patient_dataframe(self, df: pd.DataFrame) -> dict:
+        """Validate a patient DataFrame against clinical rules."""
         expectations = []
 
         def add_expectation(expectation_type: str, success: bool, **result) -> None:
@@ -34,13 +37,17 @@ class HealthcareDataValidator:
         )
 
         has_birthdate = "BIRTHDATE" in df.columns
-        birthdates = (
-            pd.to_datetime(df["BIRTHDATE"], errors="coerce")
+        def is_valid_birthdate(value) -> bool:
+            try:
+                birthdate = date.fromisoformat(str(value))
+            except ValueError:
+                return False
+            return date(1900, 1, 1) <= birthdate <= date.today()
+
+        valid_birthdates = (
+            df["BIRTHDATE"].map(is_valid_birthdate)
             if has_birthdate
-            else pd.Series(dtype="datetime64[ns]")
-        )
-        valid_birthdates = birthdates.between(
-            pd.Timestamp("1900-01-01"), pd.Timestamp(date.today())
+            else pd.Series(False, index=df.index)
         )
         add_expectation(
             "expect_column_values_to_be_between",
