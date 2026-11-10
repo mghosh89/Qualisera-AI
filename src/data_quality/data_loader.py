@@ -1,5 +1,5 @@
 """
-CuraOps AI - Synthetic Data Loader
+Qualisera AI - Synthetic Data Loader
 Loads and prepares Synthea-generated data for QA validation
 """
 import pandas as pd
@@ -51,6 +51,6 @@ class SyntheticDataLoader:
 if __name__ == "__main__":
     loader = SyntheticDataLoader()
     stats = loader.get_summary_stats()
-    print("📊 CuraOps AI - Data Summary:")
+    print("📊 Qualisera AI - Data Summary:")
     print(f"   Patients loaded: {stats['total_patients']}")
     print(f"   Observations loaded: {stats['total_observations']}")

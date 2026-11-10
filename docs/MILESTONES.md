@@ -1,4 +1,4 @@
-# CuraOps AI - Project Milestones
+# Qualisera AI - Project Milestones
 
 ## October 24, 2026 - Project Inception
 - ✅ Project repository initialized

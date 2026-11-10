@@ -1,5 +1,5 @@
 """
-CuraOps AI - Model Drift Monitoring
+Qualisera AI - Model Drift Monitoring
 Tracks AI model performance metrics over time to detect drift.
 """
 import mlflow
@@ -9,7 +9,7 @@ from datetime import datetime
 class ModelMonitor:
     """Monitors healthcare AI models for drift and degradation."""
     
-    def __init__(self, experiment_name: str = "curaops_ai_monitoring"):
+    def __init__(self, experiment_name: str = "qualisera_ai_monitoring"):
         mlflow.set_experiment(experiment_name)
     
     def log_prediction_metrics(self, predictions: list, actuals: list = None):

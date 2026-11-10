@@ -1,5 +1,5 @@
 """
-CuraOps AI - Mock Healthcare AI Inference API
+Qualisera AI - Mock Healthcare AI Inference API
 Simulates a clinical AI model for testing QA pipelines.
 """
 from fastapi import FastAPI, HTTPException
@@ -8,7 +8,7 @@ import random
 from datetime import datetime
 
 app = FastAPI(
-    title="CuraOps AI - Mock Clinical Inference API",
+    title="Qualisera AI - Mock Clinical Inference API",
     description="A test endpoint for healthcare AI QA validation",
     version="1.0.0"
 )
@@ -31,7 +31,7 @@ class AIPrediction(BaseModel):
 @app.get("/")
 def root():
     return {
-        "service": "CuraOps AI Mock Inference",
+        "service": "Qualisera AI Mock Inference",
         "status": "healthy",
         "version": "1.0.0"
     }
@@ -75,5 +75,5 @@ def predict_risk(vitals: PatientVitals):
         risk_score=round(risk_score, 3),
         risk_category=category,
         prediction_timestamp=datetime.utcnow().isoformat(),
-        model_version="curaops-mock-v1.0"
+        model_version="qualisera-mock-v1.0"
     )

@@ -1,4 +1,4 @@
-# CuraOps AI - Production Docker Image
+# Qualisera AI - Production Docker Image
 FROM python:3.10-slim
 
 WORKDIR /app

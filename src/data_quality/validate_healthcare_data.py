@@ -1,5 +1,5 @@
 """
-CuraOps AI - Healthcare Data Quality Validation
+Qualisera AI - Healthcare Data Quality Validation
 Validates synthetic patient data against clinical safety rules.
 """
 from datetime import date

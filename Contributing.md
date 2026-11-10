@@ -1,6 +1,6 @@
-# 🤝 Contributing to CuraOps AI
+# 🤝 Contributing to Qualisera AI
 
-Thank you for your interest in contributing to **CuraOps AI**! 
+Thank you for your interest in contributing to **Qualisera AI**!
 
 Our mission is to ensure safe, compliant, and drift-free AI deployments in clinical environments. By contributing to this project, you are helping to build a standardized, open-source foundation for healthcare MLOps Quality Assurance.
 
@@ -10,7 +10,7 @@ Our mission is to ensure safe, compliant, and drift-free AI deployments in clini
 
 This project is led by Moumita Ghosh, a Quality Engineering (QE) Lead with 10+ years of experience in API and mobile testing, an MS in Information Systems, and a Post-Graduate degree in Artificial Intelligence. 
 
-Currently transitioning into **Azure AI/MLOps Architecture**, I built CuraOps AI to bridge the gap between rigorous software quality assurance and the unique, high-stakes demands of healthcare AI deployment. I welcome collaboration from professionals who share a passion for building robust, privacy-first, and clinically safe technology.
+Currently transitioning into **Azure AI/MLOps Architecture**, I built Qualisera AI to bridge the gap between rigorous software quality assurance and the unique, high-stakes demands of healthcare AI deployment. I welcome collaboration from professionals who share a passion for building robust, privacy-first, and clinically safe technology.
 
 ---
 
@@ -29,7 +29,7 @@ We actively welcome contributions from professionals across the healthcare tech 
 We follow a standard GitHub workflow to keep development organized and transparent.
 
 ### 1. Find or Create an Issue
-*   Check the [Issues tab](https://github.com/[YourUsername]/CuraOps-AI/issues) for existing bugs, feature requests, or "Good First Issues."
+*   Check the [Issues tab](https://github.com/[YourUsername]/Qualisera-AI/issues) for existing bugs, feature requests, or "Good First Issues."
 *   If you have a new idea, **open a new issue** first to discuss it with the maintainer. This ensures your effort aligns with the project's architectural vision.
 
 ### 2. Fork and Branch
@@ -41,7 +41,7 @@ We follow a standard GitHub workflow to keep development organized and transpare
 
 ### 3. Develop and Test
 *   Make your changes. 
-*   **Crucial:** Because CuraOps AI is a *Quality Assurance* framework, **all new features or bug fixes must include corresponding automated tests** (using `pytest`).
+*   **Crucial:** Because Qualisera AI is a *Quality Assurance* framework, **all new features or bug fixes must include corresponding automated tests** (using `pytest`).
 *   Ensure your code adheres to PEP 8 standards and includes type hints where appropriate.
 *   Run the test suite locally before committing:
     ```bash
@@ -79,7 +79,7 @@ We are committed to fostering an open, welcoming, and respectful environment. By
 
 If you have questions about the architecture, want to propose a major feature, or are a hospital/health-tech organization interested in a pilot partnership, please reach out!
 
-*   **Open a Discussion:** Use the [GitHub Discussions](https://github.com/mghosh89/CuraOps-AI/discussions) tab.
+*   **Open a Discussion:** Use the [GitHub Discussions](https://github.com/mghosh89/Qualisera-AI/discussions) tab.
 *   **Connect on LinkedIn:** TBD
 *   **Email:** TBD
 

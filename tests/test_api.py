@@ -1,5 +1,5 @@
 """
-CuraOps AI - API Quality Assurance Tests
+Qualisera AI - API Quality Assurance Tests
 Validates the mock AI service against clinical and performance standards.
 """
 import pytest

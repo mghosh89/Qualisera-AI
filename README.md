@@ -8,7 +8,7 @@ This work directly addresses the critical research gap identified by Pileggi & L
 > **engineering approach** to synthetic data beyond 'guidelines'... There is no principled 
 > approach for evaluation, validation criteria, and quality assurance." [1]
 
-**CuraOps AI provides:**
+**Qualisera AI provides:**
 1. ✅ A **concrete engineering framework** for synthetic data in healthcare AI QA.
 2. ✅ **Pre-configured validation criteria** using Great Expectations with domain-specific clinical safety rules (e.g., vital sign boundaries).
 3. ✅ **Automated quality assurance pipelines** integrating Synthea, FastAPI, pytest, and MLflow.
@@ -16,9 +16,9 @@ This work directly addresses the critical research gap identified by Pileggi & L
 
 ### Distinct from Existing Work
 
-While recent literature has advanced data quality and synthetic data concepts, CuraOps AI occupies a unique, highly specialized niche:
+While recent literature has advanced data quality and synthetic data concepts, Qualisera AI occupies a unique, highly specialized niche:
 
-| Existing Work / Tools | Primary Focus | CuraOps AI Difference & Improvement |
+| Existing Work / Tools | Primary Focus | Qualisera AI Difference & Improvement |
 | :--- | :--- | :--- |
 | **Synthetic Data Literature** [1] | Theoretical mapping; identifies lack of engineering frameworks. | ✅ **Provides the exact working implementation** of the engineering framework called for by researchers. |
 | **Healthcare IoT Security** [2] | Live data integrity and security monitoring for medical devices. | ✅ Focuses on **pre-production AI/ML model QA**, preventing clinical prediction errors *before* deployment, rather than monitoring live streams. |
@@ -28,7 +28,7 @@ While recent literature has advanced data quality and synthetic data concepts, C
 ### Why This Matters for Healthcare AI
 Existing enterprise frameworks (like [3]) treat data quality as a *production* DataOps problem to be "self-healed" on the fly. In clinical environments, allowing an AI model to process bad data and "heal" it later is unacceptable; a single false prediction can impact patient safety. 
 
-CuraOps AI shifts the paradigm to **pre-production MLOps QA**. By enforcing strict clinical validation rules against 100% synthetic data *before* the model ever touches a live environment, it prevents errors at the source, ensuring both patient safety and strict HIPAA compliance.
+Qualisera AI shifts the paradigm to **pre-production MLOps QA**. By enforcing strict clinical validation rules against 100% synthetic data *before* the model ever touches a live environment, it prevents errors at the source, ensuring both patient safety and strict HIPAA compliance.
 
 ---
 
