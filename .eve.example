@@ -1,0 +1,21 @@
+# Qualisera AI Environment Configuration
+
+# ======================================
+# FHIR Server Configuration
+# ======================================
+# Public test server or your own
+FHIR_SERVER=https://hapi.fhir.org/baseR4
+
+# ======================================
+# MLflow Configuration
+# ======================================
+MLFLOW_TRACKING_URI=http://localhost:5000
+MLFLOW_EXPERIMENT_NAME=qualisera_ai_monitoring
+
+# ======================================
+# AWS Configuration (Optional)
+# ======================================
+# For AWS healthcare datasets
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1

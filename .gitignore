@@ -6,6 +6,7 @@ __pycache__/
 venv/
 data/synthetic/*.csv
 data/synthetic/*.json
+data/
 *.log
 .DS_Store
 synthea-with-dependencies.jar

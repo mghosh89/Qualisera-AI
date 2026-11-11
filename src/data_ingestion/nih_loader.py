@@ -65,6 +65,82 @@ class NIHDataLoader:
 
         return metadata
 
+    def validate_metadata(self, metadata: pd.DataFrame) -> dict[str, Any]:
+        """Check NIH metadata schema, image identifiers, and finding labels."""
+        errors = []
+        required_columns = {"Image Index", "Finding Labels"}
+        missing_columns = required_columns - set(metadata.columns)
+        if missing_columns:
+            errors.append(f"Missing required columns: {sorted(missing_columns)}")
+            return {"success": False, "errors": errors}
+        if metadata.empty:
+            errors.append("Metadata contains no records")
+        if metadata["Image Index"].isna().any():
+            errors.append("Image Index contains null values")
+        if metadata["Image Index"].map(
+            lambda value: isinstance(value, str) and not value.strip()
+        ).any():
+            errors.append("Image Index contains blank values")
+        if metadata["Image Index"].map(
+            lambda value: isinstance(value, str)
+            and (
+                Path(value).name != value
+                or "/" in value
+                or "\\" in value
+            )
+        ).any():
+            errors.append("Image Index contains an invalid path")
+        if metadata["Image Index"].duplicated().any():
+            errors.append("Image Index contains duplicate values")
+
+        valid_labels = {
+            "Atelectasis",
+            "Cardiomegaly",
+            "Effusion",
+            "Infiltration",
+            "Mass",
+            "Nodule",
+            "Pneumonia",
+            "Pneumothorax",
+            "Consolidation",
+            "Edema",
+            "Emphysema",
+            "Fibrosis",
+            "Pleural_Thickening",
+            "Hernia",
+            "No Finding",
+        }
+        for value in metadata["Finding Labels"].dropna():
+            labels = str(value).split("|")
+            if not labels or any(label not in valid_labels for label in labels):
+                errors.append("Finding Labels contains an unsupported label")
+                break
+        if metadata["Finding Labels"].isna().any():
+            errors.append("Finding Labels contains null values")
+        if metadata["Finding Labels"].map(
+            lambda value: isinstance(value, str) and not value.strip()
+        ).any():
+            errors.append("Finding Labels contains blank values")
+        if metadata["Finding Labels"].map(
+            lambda value: isinstance(value, str)
+            and "No Finding" in value.split("|")
+            and len(value.split("|")) > 1
+        ).any():
+            errors.append("No Finding cannot be combined with another label")
+
+        optional_checks = {
+            "Patient Age": lambda values: pd.to_numeric(
+                values, errors="coerce"
+            ).between(0, 120),
+            "Patient Gender": lambda values: values.isin(["M", "F"]),
+            "View Position": lambda values: values.isin(["AP", "PA"]),
+        }
+        for column, check in optional_checks.items():
+            if column in metadata.columns and not check(metadata[column]).all():
+                errors.append(f"{column} contains invalid values")
+
+        return {"success": not errors, "errors": errors}
+
     def get_disease_statistics(self) -> pd.DataFrame:
         """Get statistics of disease labels"""
         metadata = self.load_image_paths()

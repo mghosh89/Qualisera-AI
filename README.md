@@ -1,3 +1,9 @@
+> **Proprietary software.** All rights are reserved; no rights to use, copy, modify, or
+> distribute the project are granted without written authorization. See
+> [PROPRIETARY.md](./PROPRIETARY.md). Third-party software, standards, and data
+> remain subject to their respective terms. No patent filing or grant is
+> represented.
+
 ## 📚 Supported Datasets
 
 Qualisera AI supports multiple healthcare data sources for comprehensive testing:
@@ -25,3 +31,15 @@ Qualisera AI supports multiple healthcare data sources for comprehensive testing
 ### Using Synthea (Default)
 ```bash
 python run_qualisera.py --dataset synthea --patient-count 1000 --validate
+```
+
+## Run tests and view the dashboard
+
+```bash
+./run_tests.sh
+```
+
+The script runs the complete test suite and refreshes the results dashboard at
+[`reports/test_report.html`](./reports/test_report.html). Scenario names and
+positive/negative outcomes are documented in
+[`docs/Test_Scenarios.md`](./docs/Test_Scenarios.md).

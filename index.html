@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qualisera AI | Healthcare AI Quality Engineering</title>
-    <meta name="description" content="Qualisera AI is a synthetic-data-driven MLOps QA framework ensuring safe, HIPAA-compliant, and drift-free AI deployments in clinical environments.">
+    <meta name="description" content="Qualisera AI is a proprietary healthcare AI quality engineering platform with automated checks for Synthea, FHIR, NIH chest X-ray metadata, and API behavior.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
-            --accent: #0ea5e9;
-            --accent-hover: #0284c7;
+            --primary: #102b3f;
+            --primary-light: #1a4057;
+            --accent: #147d78;
+            --accent-hover: #106a66;
             --bg: #ffffff;
-            --bg-alt: #f8fafc;
-            --text: #334155;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-            --success: #10b981;
+            --bg-alt: #f4f8f8;
+            --text: #304756;
+            --text-light: #607583;
+            --border: #dce7e9;
+            --success: #17815e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,6 +30,10 @@
             line-height: 1.6;
             background-color: var(--bg);
             scroll-behavior: smooth;
+        }
+        a:focus-visible, button:focus-visible {
+            outline: 3px solid #65bdb2;
+            outline-offset: 3px;
         }
 
         /* Typography */
@@ -43,49 +47,95 @@
 
         /* Layout */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        section { padding: 6rem 0; }
+        section { padding: 5.5rem 0; scroll-margin-top: 82px; }
         .bg-alt { background-color: var(--bg-alt); }
 
         /* Navigation */
         nav {
-            position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
-            z-index: 1000; padding: 1rem 0;
+            position: sticky; top: 0; width: 100%; background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            z-index: 1000; padding: 0.85rem 0;
         }
         .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .logo { font-size: 1.35rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; letter-spacing: -0.04em; }
         .logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links { display: flex; gap: 1.75rem; list-style: none; }
         .nav-links a { text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.3s; }
         .nav-links a:hover { color: var(--accent); }
         .btn {
-            display: inline-block; padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+            display: inline-block; padding: 0.75rem 1.25rem; border-radius: 0.55rem;
             text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; border: none;
         }
-        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 5px 14px rgba(20,125,120,0.16); }
         .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
         .btn-outline { border: 2px solid var(--border); color: var(--primary); background: transparent; }
         .btn-outline:hover { border-color: var(--primary); }
 
         /* Hero Section */
         .hero {
-            padding: 10rem 0 6rem;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 7rem 0 5.5rem;
+            background:
+                radial-gradient(ellipse at 82% 18%, rgba(116, 196, 184, 0.19), transparent 34%),
+                linear-gradient(135deg, #f2f8f7 0%, #edf5f6 55%, #e9f2f4 100%);
             text-align: center;
+            border-bottom: 1px solid var(--border);
         }
-        .hero h1 { max-width: 900px; margin-left: auto; margin-right: auto; }
-        .hero p { font-size: 1.25rem; max-width: 700px; margin: 0 auto 2.5rem; }
+        .hero h1 { max-width: 900px; margin-left: auto; margin-right: auto; font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -0.045em; }
+        .hero p { font-size: 1.15rem; max-width: 730px; margin: 0 auto 2.25rem; }
         .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.2rem;
+            color: var(--accent); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #35a58f; }
+
+        /* Validation results */
+        .proof-section { padding: 4.5rem 0; background: #fff; }
+        .proof-header { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; }
+        .proof-header h2 { margin: 0 0 0.55rem; text-align: left; font-size: 2rem; }
+        .proof-header p { margin: 0; max-width: 650px; }
+        .run-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem; flex-shrink: 0;
+            padding: 0.55rem 0.8rem; border: 1px solid #c9e8d9; border-radius: 999px;
+            background: #f1faf5; color: #176b4d; font-size: 0.78rem; font-weight: 700;
+        }
+        .run-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #25a36f; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.85rem; }
+        .metric-card {
+            min-height: 142px; padding: 1.25rem; border: 1px solid var(--border);
+            border-radius: 0.85rem; background: linear-gradient(160deg, #fff, #fbfdfd);
+            box-shadow: 0 8px 24px rgba(16, 43, 63, 0.035);
+        }
+        .metric-label { color: var(--text-light); font-size: 0.78rem; font-weight: 600; }
+        .metric-value { display: block; margin: 0.6rem 0 0.35rem; color: var(--primary); font-size: 2.15rem; line-height: 1; letter-spacing: -0.05em; }
+        .metric-note { color: #778a95; font-size: 0.72rem; line-height: 1.45; }
+        .metric-card.success { background: linear-gradient(160deg, #f1faf5, #fff); border-color: #cee9da; }
+        .metric-card.success .metric-value { color: #17764f; }
+        .metric-card.alert { background: linear-gradient(160deg, #fff7f5, #fff); border-color: #f0d9d3; }
+        .metric-card.alert .metric-value { color: #ad4b3b; }
+        .coverage-panel {
+            display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+            gap: 2rem; margin-top: 1rem; padding: 1.35rem 1.5rem;
+            border: 1px solid var(--border); border-radius: 0.85rem; background: var(--bg-alt);
+        }
+        .coverage-copy strong { display: block; margin-bottom: 0.25rem; color: var(--primary); }
+        .coverage-copy p { margin: 0; font-size: 0.86rem; }
+        .dataset-breakdown { display: flex; gap: 0.65rem; flex-wrap: wrap; justify-content: flex-end; }
+        .dataset-chip { padding: 0.48rem 0.7rem; border: 1px solid #d5e3e5; border-radius: 0.5rem; background: #fff; color: var(--text); font-size: 0.78rem; }
+        .dataset-chip strong { color: var(--primary); }
+        .results-note { margin: 1rem 0 0; font-size: 0.74rem; }
 
         /* Features Grid */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .card {
             background: var(--bg); padding: 2rem; border-radius: 1rem;
             border: 1px solid var(--border); transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(16, 43, 63, 0.035);
         }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: var(--accent); }
         .icon-box {
-            width: 50px; height: 50px; background: #e0f2fe; border-radius: 0.75rem;
+            width: 50px; height: 50px; background: #e8f4f2; border-radius: 0.75rem;
             display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;
         }
         .icon-box svg { width: 24px; height: 24px; stroke: var(--accent); }
@@ -131,8 +181,26 @@
             h1 { font-size: 2.5rem; }
             h2 { font-size: 1.75rem; }
             .nav-links { display: none; }
+            .metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .proof-header { align-items: flex-start; flex-direction: column; gap: 1rem; }
+            .coverage-panel { grid-template-columns: 1fr; gap: 1rem; }
+            .dataset-breakdown { justify-content: flex-start; }
             .founder-card { flex-direction: column; text-align: center; }
             .flow-arrow { transform: rotate(90deg); margin: 0 auto; }
+        }
+        @media (max-width: 480px) {
+            .container, .nav-container { padding-left: 1.1rem; padding-right: 1.1rem; }
+            section { padding: 4rem 0; }
+            .hero { padding: 5rem 0 4rem; }
+            .hero p { font-size: 1rem; }
+            .grid-3 { grid-template-columns: minmax(0, 1fr); }
+            .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+            .metric-card { min-height: 126px; padding: 1rem; }
+            .metric-value { font-size: 1.9rem; }
+            .run-badge { white-space: nowrap; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
         }
     </style>
 </head>
@@ -145,22 +213,83 @@
             <ul class="nav-links">
                 <li><a href="#problem">The Problem</a></li>
                 <li><a href="#solution">Solution</a></li>
+                <li><a href="#metrics">Validation</a></li>
                 <li><a href="#architecture">Architecture</a></li>
                 <li><a href="#founder">About</a></li>
             </ul>
-            <a href="https://github.com/mghosh89/Qualisera-AI" target="_blank" class="btn btn-primary">View on GitHub</a>
+            <a href="mailto:founder@qualiseraai.com" class="btn btn-primary">Private enquiries</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Ensuring Safe, Compliant, and Drift-Free AI in Healthcare</h1>
-            <p>Qualisera AI is an open-source, synthetic-data-driven MLOps QA framework. We enable hospitals and health-tech teams to validate, monitor, and deploy clinical AI models with zero PHI exposure.</p>
+            <span class="eyebrow">Healthcare AI quality engineering</span>
+            <h1>Quality Engineering for Healthcare AI</h1>
+            <p>Qualisera AI is a proprietary quality engineering platform for healthcare AI. It validates data and API behaviors with synthetic and public datasets in a controlled QA workflow.</p>
             <div class="hero-btns">
-                <a href="https://github.com/mghosh89/Qualisera-AI" target="_blank" class="btn btn-primary">Explore the Framework</a>
+                <a href="#metrics" class="btn btn-primary">View Validation Results</a>
+                <a href="mailto:founder@qualiseraai.com" class="btn btn-outline">Discuss private access</a>
                 <a href="#architecture" class="btn btn-outline">See How It Works</a>
             </div>
+        </div>
+    </section>
+
+    <!-- Validation Results -->
+    <section id="metrics" class="proof-section" aria-labelledby="metrics-title">
+        <div class="container">
+            <div class="proof-header">
+                <div>
+                    <span class="eyebrow">Quality evidence</span>
+                    <h2 id="metrics-title">Validation at a glance</h2>
+                    <p>One test run, with dataset-specific scenarios reported separately from the full automated suite.</p>
+                </div>
+                <span class="run-badge">All checks passed</span>
+            </div>
+            <div class="metrics-grid" role="list" aria-label="Automated test results">
+                <article class="metric-card" role="listitem">
+                    <span class="metric-label">Tests collected</span>
+                    <strong class="metric-value">113</strong>
+                    <span class="metric-note">All automated checks in the run</span>
+                </article>
+                <article class="metric-card" role="listitem">
+                    <span class="metric-label">Dataset scenarios</span>
+                    <strong class="metric-value">100</strong>
+                    <span class="metric-note">Synthea, FHIR, and NIH data</span>
+                </article>
+                <article class="metric-card" role="listitem">
+                    <span class="metric-label">Positive scenarios</span>
+                    <strong class="metric-value">51</strong>
+                    <span class="metric-note">Valid inputs and expected behavior</span>
+                </article>
+                <article class="metric-card" role="listitem">
+                    <span class="metric-label">Negative scenarios</span>
+                    <strong class="metric-value">49</strong>
+                    <span class="metric-note">Invalid or incomplete input handling</span>
+                </article>
+                <article class="metric-card success" role="listitem">
+                    <span class="metric-label">Passed</span>
+                    <strong class="metric-value">113</strong>
+                    <span class="metric-note">Every collected test passed</span>
+                </article>
+                <article class="metric-card alert" role="listitem">
+                    <span class="metric-label">Failures</span>
+                    <strong class="metric-value">0</strong>
+                    <span class="metric-note">In the reported test run</span>
+                </article>
+            </div>
+            <div class="coverage-panel">
+                <div class="coverage-copy">
+                    <strong>What does “100 dataset scenarios” mean?</strong>
+                    <p>Those are the dataset-focused cases. The other 13 tests cover supporting API, dashboard, and loader behavior; all 113 tests are included in the pass/fail totals.</p>
+                </div>
+                <div class="dataset-breakdown" aria-label="Dataset scenario counts">
+                    <span class="dataset-chip"><strong>Synthea</strong> · 33</span>
+                    <span class="dataset-chip"><strong>FHIR</strong> · 34</span>
+                    <span class="dataset-chip"><strong>NIH</strong> · 33</span>
+                </div>
+            </div>
+            <p class="results-note">These are software quality checks against test data. They are not clinical validation, medical advice, regulatory certification, or evidence of production readiness.</p>
         </div>
     </section>
 
@@ -174,22 +303,22 @@
                     <div class="icon-box">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
                     </div>
-                    <h3>HIPAA & Privacy Risks</h3>
-                    <p>Testing AI models on real patient data violates HIPAA and exposes institutions to massive legal liability.</p>
+                    <h3>Privacy & Governance</h3>
+                    <p>Healthcare AI teams need repeatable ways to test data and software behavior while managing sensitive information responsibly.</p>
                 </div>
                 <div class="card">
                     <div class="icon-box">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
                     </div>
                     <h3>Silent Model Drift</h3>
-                    <p>AI accuracy degrades over time as patient demographics change, leading to dangerous clinical hallucinations.</p>
+                    <p>Changes in data and operating conditions can affect model behavior, making ongoing evaluation and monitoring important.</p>
                 </div>
                 <div class="card">
                     <div class="icon-box">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
                     </div>
                     <h3>API Interoperability</h3>
-                    <p>Legacy EHR systems and modern AI endpoints frequently fail to communicate, causing critical data pipeline breaks.</p>
+                    <p>Healthcare systems rely on consistent data formats and dependable interfaces across applications and services.</p>
                 </div>
             </div>
         </div>
@@ -199,19 +328,19 @@
     <section id="solution" class="bg-alt">
         <div class="container">
             <h2>The Qualisera AI Solution</h2>
-            <p class="section-subtitle">A standardized, privacy-first testing pipeline that allows health-tech teams to validate clinical AI models using 100% synthetic data.</p>
+            <p class="section-subtitle">A proprietary QA workflow for healthcare datasets and API behavior, using synthetic Synthea data alongside FHIR resources and public NIH chest X-ray metadata.</p>
             <div class="grid-3">
                 <div class="card">
                     <h3>🛡️ Synthetic-First Architecture</h3>
-                    <p>Generates realistic, de-identified patient histories using Synthea™. Guarantees zero PHI exposure during the entire QA phase.</p>
+                    <p>Includes Synthea patient records and FHIR resource checks to exercise common healthcare data workflows in a test environment.</p>
                 </div>
                 <div class="card">
-                    <h3>🩺 Clinical Safety Gates</h3>
-                    <p>Pre-configured Great Expectations validation suites enforce medical boundary checks (e.g., heart rate 40-180 bpm) before data hits the model.</p>
+                    <h3>Healthcare Data Quality Checks</h3>
+                    <p>Automated checks cover required fields, unique identifiers, date consistency, supported values, and selected vital-sign data-quality ranges.</p>
                 </div>
                 <div class="card">
-                    <h3>Automated MLOps Monitoring</h3>
-                    <p>Integrates MLflow and automated pytest suites to detect model drift, validate API latency (<200ms), and ensure continuous reliability.</p>
+                    <h3>Automated Quality Tests</h3>
+                    <p>Pytest verifies API responses and dataset-loader behavior. The current suite is a QA prototype, not a deployed drift-monitoring service.</p>
                 </div>
             </div>
         </div>
@@ -221,7 +350,7 @@
     <section id="architecture">
         <div class="container">
             <h2>How It Works</h2>
-            <p class="section-subtitle">An end-to-end, cloud-agnostic MLOps pipeline optimized for healthcare compliance.</p>
+            <p class="section-subtitle">A modular workflow for exercising healthcare test data and API behaviors. Each component can be evaluated independently.</p>
             
             <div class="flow-container">
                 <div class="flow-step">
@@ -231,7 +360,7 @@
                 <div class="flow-arrow">→</div>
                 <div class="flow-step">
                     <h4>2. QA Validation</h4>
-                    <p>Great Expectations enforces clinical safety boundaries.</p>
+                    <p>Python validators check schema, identifiers, dates, labels, and selected data-quality rules.</p>
                 </div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-step">
@@ -241,19 +370,19 @@
                 <div class="flow-arrow">→</div>
                 <div class="flow-step">
                     <h4>4. Drift Monitoring</h4>
-                    <p>MLflow tracks distributions and alerts on model decay.</p>
+                    <p>Document results and add monitoring integrations as the workflow evolves.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- National Importance / Impact -->
+    <!-- Why healthcare AI quality matters -->
     <section class="bg-alt">
         <div class="container">
-            <h2>National Importance & Impact</h2>
+            <h2>Why Healthcare AI Quality Matters</h2>
             <div class="impact-box">
-                <h3>Solving a Critical U.S. Healthcare Infrastructure Gap</h3>
-                <p>Qualisera AI directly addresses the "fundamental lack of engineering approach" to synthetic data identified in recent peer-reviewed literature (Pileggi & Liu, 2026). By providing an open-source, pre-production QA framework, we accelerate safe AI adoption, reduce clinical risk, and ensure strict HIPAA compliance for hospitals nationwide.</p>
+                <h3>Building repeatable quality practices for healthcare software</h3>
+                <p>Healthcare AI depends on dependable inputs, interfaces, and evaluation processes. Qualisera AI is a proprietary prototype that brings selected quality checks together in a reviewable workflow.</p>
             </div>
         </div>
     </section>
@@ -269,7 +398,7 @@
                     <span class="founder-title">Lead Architect & Senior Quality Assurance Engineer</span>
                     <p><strong>Moumita Ghosh</strong> is a seasoned Quality Assurance Engineer II with <strong>10+ years of experience</strong> specializing in API testing (REST & GraphQL), mobile testing (iOS/Android), and automated testing frameworks. She holds an <strong>MS in Computer and Information Systems from Kean University</strong> and a <strong>BTech in Computer Science</strong>.</p>
                     <p>With deep expertise in Postman automation, SQL/PostgreSQL database validation, and CI/CD pipelines, Moumita has delivered high-quality software across <strong>healthcare, e-commerce, e-learning, and retail industries</strong>. She is <strong>AWS Certified Cloud Practitioner</strong> and holds advanced certifications in Python programming and database systems from Stanford.</p>
-                    <p>Moumita architected Qualisera AI to bridge the critical gap between rigorous software quality assurance and the unique, high-stakes demands of clinical AI deployment—ensuring healthcare organizations can deploy AI models with confidence, compliance, and zero PHI exposure.</p>
+                    <p>Moumita created Qualisera AI to apply established software quality practices to healthcare data and AI workflows, with a focus on clear, repeatable validation and transparent test results.</p>
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
                         <a href="https://www.linkedin.com/in/moumitaghosh9815" target="_blank" class="btn btn-outline">View LinkedIn Profile</a>
                         <a href="mailto:founder@qualiseraai.com" class="btn btn-primary">Contact Founder</a>
@@ -282,11 +411,10 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p style="color: #94a3b8; margin-bottom: 1rem;">&copy; 2026 Qualisera AI. Open-source under the MIT License.</p>
+            <p style="color: #cbd5e1; margin-bottom: 1rem;">&copy; 2026 Qualisera AI. Proprietary software. All rights reserved.</p>
             <p style="color: #94a3b8;">
-                <a href="https://github.com/mghosh89/Qualisera-AI" target="_blank">GitHub</a> &bull;
                 <a href="https://www.linkedin.com/in/moumitaghosh9815" target="_blank">LinkedIn</a> &bull; 
-                <a href="mailto:contact@qualiseraai.com">contact@qualiseraai.com</a>
+                <a href="mailto:contact@qualiseraai.com">Private enquiries</a>
             </p>
         </div>
     </footer>

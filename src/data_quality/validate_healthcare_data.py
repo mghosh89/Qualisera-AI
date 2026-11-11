@@ -28,12 +28,37 @@ class HealthcareDataValidator:
                 "result": result,
             })
 
+        add_expectation(
+            "expect_table_row_count_to_be_between",
+            not df.empty,
+            min_value=1,
+        )
+
         has_id = "Id" in df.columns
         add_expectation("expect_column_to_exist", has_id, column="Id")
         add_expectation(
             "expect_column_values_to_not_be_null",
             has_id and df["Id"].notna().all(),
             column="Id",
+        )
+        nonblank_ids = (
+            df["Id"].map(lambda value: bool(str(value).strip()))
+            if has_id
+            else pd.Series(False, index=df.index)
+        )
+        add_expectation(
+            "expect_column_values_to_not_be_blank",
+            has_id and nonblank_ids.all(),
+            column="Id",
+        )
+        unique_ids = has_id and not df["Id"].duplicated().any()
+        add_expectation(
+            "expect_column_values_to_be_unique",
+            unique_ids,
+            column="Id",
+            duplicate_count=(
+                int(df["Id"].duplicated().sum()) if has_id else 0
+            ),
         )
 
         has_birthdate = "BIRTHDATE" in df.columns
@@ -77,6 +102,19 @@ class HealthcareDataValidator:
             unexpected_count=int((~valid_genders).sum()),
         )
 
+        if "DEATHDATE" in df.columns:
+            has_valid_deathdate = df.apply(
+                lambda row: self._is_valid_deathdate(
+                    row.get("DEATHDATE"), row.get("BIRTHDATE")
+                ),
+                axis=1,
+            )
+            add_expectation(
+                "expect_deathdate_to_follow_birthdate",
+                has_valid_deathdate.all(),
+                unexpected_count=int((~has_valid_deathdate).sum()),
+            )
+
         successful_expectations = sum(r["success"] for r in expectations)
         success = successful_expectations == len(expectations)
         return {
@@ -89,11 +127,39 @@ class HealthcareDataValidator:
             },
             "failed_expectations": [r for r in expectations if not r["success"]],
         }
+
+    @staticmethod
+    def _is_valid_deathdate(deathdate, birthdate) -> bool:
+        if pd.isna(deathdate) or str(deathdate).strip() == "":
+            return True
+        try:
+            parsed_deathdate = date.fromisoformat(str(deathdate))
+            parsed_birthdate = date.fromisoformat(str(birthdate))
+        except (TypeError, ValueError):
+            return False
+        return parsed_birthdate <= parsed_deathdate <= date.today()
     
     def validate_vitals_data(self) -> dict:
         """Validate patient vitals against medical safety ranges."""
-        df = self.loader.load_observations()
-        
+        return self.validate_vitals_dataframe(self.loader.load_observations())
+
+    def validate_vitals_dataframe(self, df: pd.DataFrame) -> dict:
+        """Validate heart-rate observations in a DataFrame."""
+        required_columns = {"DESCRIPTION", "VALUE"}
+        if not required_columns.issubset(df.columns):
+            return {
+                "metric": "heart_rate",
+                "success": False,
+                "message": f"Missing required columns: {sorted(required_columns - set(df.columns))}",
+            }
+
+        if df.empty:
+            return {
+                "metric": "heart_rate",
+                "success": False,
+                "message": "No observations to validate",
+            }
+
         # Filter for specific vital signs
         heart_rate = df[df["DESCRIPTION"].str.contains("Heart rate", case=False, na=False)]
         
@@ -116,7 +182,7 @@ class HealthcareDataValidator:
                     "values_out_of_range": int((~in_range).sum()),
                 },
             }
-        return {"metric": "heart_rate", "success": True, "message": "No data"}
+        return {"metric": "heart_rate", "success": False, "message": "No heart-rate data"}
 
 if __name__ == "__main__":
     validator = HealthcareDataValidator()

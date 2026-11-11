@@ -139,16 +139,59 @@ class FHIRDataLoader:
     def validate_fhir_resource(self, resource: Dict, resource_type: str) -> bool:
         """Validate FHIR resource against standard"""
         try:
+            if not isinstance(resource, dict) or resource.get("resourceType") != resource_type:
+                return False
+
             if resource_type == "Patient":
+                if resource.get("gender") not in {None, "male", "female", "other", "unknown"}:
+                    return False
                 Patient.model_validate(resource)
             elif resource_type == "Observation":
+                valid_statuses = {
+                    "registered",
+                    "preliminary",
+                    "final",
+                    "amended",
+                    "corrected",
+                    "cancelled",
+                    "entered-in-error",
+                    "unknown",
+                }
+                if resource.get("status") not in valid_statuses:
+                    return False
                 Observation.model_validate(resource)
             elif resource_type == "Condition":
                 Condition.model_validate(resource)
+            else:
+                return False
             return True
         except Exception as e:
             print(f"Validation error: {e}")
             return False
+
+    def validate_patient_bundle(self, bundle: Dict[str, Any]) -> bool:
+        """Validate Patient resources and require unique, nonblank resource IDs."""
+        if not isinstance(bundle, dict) or bundle.get("resourceType") != "Bundle":
+            return False
+        entries = bundle.get("entry")
+        if not isinstance(entries, list) or not entries:
+            return False
+
+        patient_ids = []
+        for entry in entries:
+            if not isinstance(entry, dict):
+                return False
+            patient = entry.get("resource")
+            if not isinstance(patient, dict) or not self.validate_fhir_resource(
+                patient, "Patient"
+            ):
+                return False
+            patient_id = patient.get("id")
+            if not isinstance(patient_id, str) or not patient_id.strip():
+                return False
+            patient_ids.append(patient_id)
+
+        return len(patient_ids) == len(set(patient_ids))
 
     def get_summary(self) -> Dict[str, Any]:
         """Get summary of FHIR data"""
