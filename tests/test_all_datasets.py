@@ -2,6 +2,8 @@
 Qualisera AI - Comprehensive Test Suite
 Tests all healthcare datasets with positive and negative scenarios
 """
+import json
+
 import pytest
 import pandas as pd
 from pathlib import Path
@@ -32,9 +34,9 @@ def nih_loader():
     return DataFactory.get_loader("nih", config)
 
 @pytest.fixture
-def validator():
+def validator(synthea_loader):
     """Create data quality validator"""
-    return HealthcareDataValidator(data_dir="data/data/synthea")
+    return HealthcareDataValidator(data_dir=synthea_loader.data_dir)
 
 
 # ==========================================
@@ -74,51 +76,68 @@ class TestSyntheaPositive:
         """TEST: Data passes quality validation"""
         patients = synthea_loader.load_patients()
         results = validator.validate_patient_dataframe(patients)
-        assert results["success"], f"Validation should pass: {results.get('failed_checks', [])}"
+        assert results["success"], f"Validation should pass: {results['failed_expectations']}"
 
 
 class TestSyntheaNegative:
     """Negative test cases for Synthea data"""
 
-    def test_synthea_invalid_heart_rate_detected(self):
-        """TEST: Heart rate outside 40-180 bpm is caught"""
-        # Create test data with invalid heart rate
-        test_data = pd.DataFrame({
-            "heart_rate": [250],  # Clinically impossible
-            "patient_id": ["P001"]
+    def test_synthea_rejects_heart_rate_above_180_bpm(self, validator):
+        """Heart rate above the supported clinical range is rejected."""
+        observations = pd.DataFrame({
+            "DESCRIPTION": ["Heart rate"],
+            "VALUE": ["250"],
         })
-        # This should fail validation
-        assert test_data["heart_rate"].iloc[0] > 180, "Should detect invalid heart rate"
 
-    def test_synthea_missing_patient_id(self):
-        """TEST: Missing patient ID is detected"""
-        test_data = pd.DataFrame({
+        result = validator.validate_vitals_dataframe(observations)
+
+        assert not result["success"]
+        assert result["statistics"]["values_out_of_range"] == 1
+
+    def test_synthea_rejects_missing_patient_id(self, validator):
+        """Patient records with a null identifier fail quality validation."""
+        patients = pd.DataFrame({
             "Id": [None],
-            "GENDER": ["M"]
+            "BIRTHDATE": ["2000-01-01"],
+            "GENDER": ["M"],
         })
-        assert test_data["Id"].isnull().any(), "Should detect missing patient ID"
 
-    def test_synthea_invalid_gender_value(self):
-        """TEST: Invalid gender value is caught"""
-        test_data = pd.DataFrame({
-            "GENDER": ["X"]  # Invalid
+        result = validator.validate_patient_dataframe(patients)
+
+        assert not result["success"]
+
+    def test_synthea_rejects_unsupported_gender(self, validator):
+        """Patient records with an unsupported gender fail validation."""
+        patients = pd.DataFrame({
+            "Id": ["patient-1"],
+            "BIRTHDATE": ["2000-01-01"],
+            "GENDER": ["X"],
         })
-        valid_genders = ["M", "F"]
-        assert test_data["GENDER"].iloc[0] not in valid_genders, "Should catch invalid gender"
 
-    def test_synthea_future_birthdate(self):
-        """TEST: Birth date in future is detected"""
-        from datetime import date
-        test_data = pd.DataFrame({
-            "BIRTHDATE": ["2030-01-01"]  # Future date
+        result = validator.validate_patient_dataframe(patients)
+
+        assert not result["success"]
+
+    def test_synthea_rejects_future_birthdate(self, validator):
+        """Patient records with future birth dates fail validation."""
+        from datetime import date, timedelta
+
+        future_date = (date.today() + timedelta(days=1)).isoformat()
+        patients = pd.DataFrame({
+            "Id": ["patient-1"],
+            "BIRTHDATE": [future_date],
+            "GENDER": ["M"],
         })
-        birth_date = date.fromisoformat(test_data["BIRTHDATE"].iloc[0])
-        assert birth_date > date.today(), "Should detect future birth date"
 
-    def test_synthea_empty_dataframe_rejected(self):
-        """TEST: Empty dataframe fails validation"""
-        empty_df = pd.DataFrame()
-        assert empty_df.empty, "Empty dataframe should be detected"
+        result = validator.validate_patient_dataframe(patients)
+
+        assert not result["success"]
+
+    def test_synthea_rejects_empty_patient_dataframe(self, validator):
+        """An empty patient dataset fails quality validation."""
+        result = validator.validate_patient_dataframe(pd.DataFrame())
+
+        assert not result["success"]
 
 
 # ==========================================
@@ -140,60 +159,96 @@ class TestFHIRPositive:
         assert patients["id"].notnull().all(), "All patients should have IDs"
 
     def test_fhir_patient_has_gender(self, fhir_loader):
-        """TEST: FHIR patients have gender field"""
+        """FHIR patient gender values follow the FHIR administrative-gender set."""
         patients = fhir_loader.load_patients()
-        if "gender" in patients.columns:
-            assert patients["gender"].notnull().any(), "Should have at least one gender value"
+        assert "gender" in patients.columns
+        genders = patients["gender"].dropna()
+        assert not genders.empty
+        assert set(genders).issubset({"male", "female", "other", "unknown"})
 
-    def test_fhir_observations_load(self, fhir_loader):
-        """TEST: FHIR Observation resources load"""
-        observations = fhir_loader.load_observations()
-        # May be empty if server is down, but shouldn't error
-        assert isinstance(observations, pd.DataFrame), "Should return DataFrame"
+    def test_fhir_observations_load(self, tmp_path):
+        """FHIR Observation bundle values load from local data without networking."""
+        observation = {
+            "resourceType": "Observation",
+            "id": "observation-1",
+            "status": "final",
+            "code": {"text": "Heart rate"},
+            "valueQuantity": {"value": 72, "unit": "/min"},
+        }
+        (tmp_path / "observation_bundle.json").write_text(json.dumps({
+            "resourceType": "Bundle",
+            "entry": [{"resource": observation}],
+        }))
+
+        observations = DataFactory.get_loader(
+            "fhir", {"data_dir": str(tmp_path)}
+        ).load_observations()
+
+        assert observations.to_dict("records") == [
+            {
+                "id": "observation-1",
+                "code": "Heart rate",
+                "value": 72,
+                "unit": "/min",
+                "date": None,
+            }
+        ]
 
     def test_fhir_resource_validation(self, fhir_loader):
-        """TEST: FHIR resources are valid JSON"""
-        import json
-        fhir_file = Path("data/fhir/patient_bundle.json")
-        if fhir_file.exists():
-            with open(fhir_file) as f:
-                data = json.load(f)
-            assert "resourceType" in data, "Should have resourceType field"
-            assert data["resourceType"] == "Bundle", "Should be a Bundle resource"
+        """The local FHIR Patient bundle contains valid, uniquely identified patients."""
+        fhir_file = Path(fhir_loader.data_dir) / "patient_bundle.json"
+        with fhir_file.open() as file:
+            data = json.load(file)
+        assert fhir_loader.validate_patient_bundle(data)
 
 
 class TestFHIRNegative:
     """Negative test cases for FHIR data"""
 
-    def test_fhir_invalid_resource_type(self):
-        """TEST: Invalid FHIR resource type is caught"""
-        invalid_resource = {"resourceType": "InvalidType"}
-        valid_types = ["Patient", "Observation", "Condition", "Bundle"]
-        assert invalid_resource["resourceType"] not in valid_types, "Should detect invalid type"
+    def test_fhir_rejects_unsupported_resource_type(self, fhir_loader):
+        """FHIR resources with an unsupported type are rejected."""
+        assert not fhir_loader.validate_fhir_resource(
+            {"resourceType": "InvalidType"}, "InvalidType"
+        )
 
-    def test_fhir_missing_required_field(self):
-        """TEST: Missing required FHIR fields detected"""
-        invalid_patient = {"gender": "female"}  # Missing 'resourceType' and 'id'
-        assert "resourceType" not in invalid_patient, "Should detect missing resourceType"
+    def test_fhir_rejects_resource_missing_resource_type(self, fhir_loader):
+        """FHIR resources without resourceType are rejected."""
+        assert not fhir_loader.validate_fhir_resource(
+            {"gender": "female"}, "Patient"
+        )
 
-    def test_fhir_invalid_gender_value(self):
-        """TEST: Invalid gender in FHIR resource"""
-        invalid_patient = {"resourceType": "Patient", "gender": "unknown"}
-        valid_genders = ["male", "female", "other", "unknown"]
-        # 'unknown' is valid in FHIR, but test the validation logic
-        assert invalid_patient["gender"] in valid_genders, "Should validate gender"
+    def test_fhir_rejects_unsupported_patient_gender(self, fhir_loader):
+        """FHIR Patient resources with an unsupported gender are rejected."""
+        assert not fhir_loader.validate_fhir_resource(
+            {"resourceType": "Patient", "gender": "invalid"}, "Patient"
+        )
 
-    def test_fhir_empty_bundle(self):
-        """TEST: Empty FHIR bundle is detected"""
-        empty_bundle = {"resourceType": "Bundle", "entry": []}
-        assert len(empty_bundle["entry"]) == 0, "Should detect empty bundle"
+    def test_fhir_empty_patient_bundle_returns_no_patients(self, tmp_path):
+        """An empty local Patient bundle returns an empty patient table."""
+        fhir_dir = tmp_path / "fhir"
+        fhir_dir.mkdir()
+        (fhir_dir / "test_patients.json").write_text(
+            '{"resourceType": "Bundle", "entry": []}'
+        )
 
-    def test_fhir_invalid_json_structure(self):
-        """TEST: Malformed JSON is caught"""
-        import json
-        invalid_json = '{"resourceType": "Patient", "id": }'  # Invalid JSON
-        with pytest.raises(json.JSONDecodeError):
-            json.loads(invalid_json)
+        patients = DataFactory.get_loader(
+            "fhir", {"data_dir": str(fhir_dir)}
+        ).load_patients()
+
+        assert patients.empty
+
+    def test_fhir_malformed_local_json_raises_decode_error(self, tmp_path):
+        """Malformed FHIR JSON is surfaced as a decode error."""
+        fhir_dir = tmp_path / "fhir"
+        fhir_dir.mkdir()
+        (fhir_dir / "test_patients.json").write_text(
+            '{"resourceType": "Patient", "id": }'
+        )
+
+        with pytest.raises(ValueError):
+            DataFactory.get_loader(
+                "fhir", {"data_dir": str(fhir_dir)}
+            ).load_patients()
 
 
 # ==========================================
@@ -203,68 +258,98 @@ class TestFHIRNegative:
 class TestNIHPositive:
     """Positive test cases for NIH Chest X-ray data"""
 
-    def test_nih_metadata_loads(self, nih_loader):
-        """TEST: NIH metadata CSV loads successfully"""
+    def test_nih_metadata_csv_loads_successfully(self, nih_loader):
+        """NIH metadata CSV loads successfully."""
         metadata = nih_loader.download_metadata()
         assert not metadata.empty, "Metadata should not be empty"
 
-    def test_nih_metadata_has_image_index(self, nih_loader):
-        """TEST: Metadata has Image Index column"""
+    def test_nih_metadata_contains_image_index(self, nih_loader):
+        """NIH metadata contains the image identifier column."""
         metadata = nih_loader.download_metadata()
         assert "Image Index" in metadata.columns, "Should have Image Index column"
 
-    def test_nih_metadata_has_finding_labels(self, nih_loader):
-        """TEST: Metadata has disease finding columns"""
+    def test_nih_metadata_contains_finding_labels(self, nih_loader):
+        """NIH metadata contains finding labels."""
         metadata = nih_loader.download_metadata()
-        finding_cols = [col for col in metadata.columns if col not in ["Image Index", "Patient ID", "Follow-up #"]]
-        assert len(finding_cols) > 0, "Should have disease finding columns"
+        assert "Finding Labels" in metadata.columns
+        assert metadata["Finding Labels"].notna().all()
 
-    def test_nih_image_paths_generated(self, nih_loader):
-        """TEST: Image paths are correctly generated"""
-        metadata = nih_loader.load_image_paths()
-        if not metadata.empty and "full_path" in metadata.columns:
-            assert metadata["full_path"].notnull().any(), "Should generate image paths"
+    def test_nih_image_paths_are_resolved(self, tmp_path):
+        """Metadata image references resolve to the matching local image files."""
+        image = tmp_path / "image-001.png"
+        image.touch()
+        pd.DataFrame({
+            "Image Index": ["image-001.png"],
+            "Finding Labels": ["No Finding"],
+        }).to_csv(tmp_path / "Data_Entry_2017.csv", index=False)
+        loader = DataFactory.get_loader("nih", {"data_dir": str(tmp_path)})
 
-    def test_nih_disease_statistics(self, nih_loader):
-        """TEST: Disease statistics are calculated"""
+        metadata = loader.load_image_paths()
+
+        assert Path(metadata.iloc[0]["full_path"]) == image
+        assert Path(metadata.iloc[0]["full_path"]).is_file()
+
+    def test_nih_finding_statistics_are_calculated(self, nih_loader):
+        """Finding-label statistics are calculated."""
         stats = nih_loader.get_disease_statistics()
         assert isinstance(stats, pd.DataFrame), "Should return DataFrame"
+        assert not stats.empty
+
+    def test_nih_metadata_passes_schema_and_label_validation(self, nih_loader):
+        """Valid NIH metadata passes schema and label validation."""
+        metadata = nih_loader.download_metadata()
+
+        assert nih_loader.validate_metadata(metadata)["success"]
 
 
 class TestNIHNegative:
     """Negative test cases for NIH Chest X-ray data"""
 
-    def test_nih_missing_metadata_file(self, nih_loader):
-        """TEST: Missing metadata file is handled"""
-        # Temporarily rename file to simulate missing
-        metadata_file = Path("data/nih_cxr/Data_Entry_2017_v2020.csv")
-        if metadata_file.exists():
-            metadata = nih_loader.download_metadata()
-            assert not metadata.empty, "Should handle existing file"
+    def test_nih_missing_metadata_file_is_reported(self, tmp_path):
+        """Missing NIH metadata is reported as an empty dataset."""
+        loader = DataFactory.get_loader(
+            "nih", {"data_dir": str(tmp_path / "empty")}
+        )
 
-    def test_nih_invalid_image_path(self):
-        """TEST: Invalid image path is detected"""
-        invalid_path = Path("/nonexistent/image.png")
-        assert not invalid_path.exists(), "Should detect non-existent path"
+        assert loader.download_metadata().empty
 
-    def test_nih_missing_disease_label(self):
-        """TEST: Missing disease label column"""
-        test_df = pd.DataFrame({"Image Index": ["001.png"]})
-        assert "Atelectasis" not in test_df.columns, "Should detect missing label"
+    def test_nih_missing_local_image_is_reported(self, tmp_path):
+        """An image reference without a local file resolves as unavailable."""
+        data_dir = tmp_path / "nih"
+        data_dir.mkdir()
+        pd.DataFrame({
+            "Image Index": ["missing.png"],
+            "Finding Labels": ["No Finding"],
+        }).to_csv(data_dir / "Data_Entry_2017.csv", index=False)
+        loader = DataFactory.get_loader("nih", {"data_dir": str(data_dir)})
 
-    def test_nih_duplicate_image_index(self):
-        """TEST: Duplicate image indices are detected"""
-        test_df = pd.DataFrame({
-            "Image Index": ["001.png", "001.png"]
-        })
-        assert test_df["Image Index"].duplicated().any(), "Should detect duplicates"
+        assert loader.get_summary()["available_images"] == 0
 
-    def test_nih_invalid_disease_value(self):
-        """TEST: Invalid disease label values"""
-        test_df = pd.DataFrame({
-            "Atelectasis": [2]  # Should be 0 or 1
-        })
-        assert test_df["Atelectasis"].iloc[0] not in [0, 1], "Should detect invalid value"
+    def test_nih_missing_finding_label_column_fails_validation(self, nih_loader):
+        """NIH metadata without Finding Labels fails schema validation."""
+        result = nih_loader.validate_metadata(
+            pd.DataFrame({"Image Index": ["001.png"]})
+        )
+
+        assert not result["success"]
+
+    def test_nih_duplicate_image_index_fails_validation(self, nih_loader):
+        """Duplicate NIH image identifiers fail metadata validation."""
+        result = nih_loader.validate_metadata(pd.DataFrame({
+            "Image Index": ["001.png", "001.png"],
+            "Finding Labels": ["No Finding", "Effusion"],
+        }))
+
+        assert not result["success"]
+
+    def test_nih_unsupported_finding_label_fails_validation(self, nih_loader):
+        """Unsupported NIH finding labels fail metadata validation."""
+        result = nih_loader.validate_metadata(pd.DataFrame({
+            "Image Index": ["001.png"],
+            "Finding Labels": ["Unknown Finding"],
+        }))
+
+        assert not result["success"]
 
 
 # ==========================================
