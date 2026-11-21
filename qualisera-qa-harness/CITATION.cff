@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this harness, please cite the working paper."
+title: "Qualisera QA Harness: Synthetic-First Pre-Deployment Validation"
+authors:
+  - family-names: Ghosh
+    given-names: Moumita
+    orcid: 0009-0004-2472-5548
+version: "0.1.0"
+doi: "10.5281/zenodo.24312873"
