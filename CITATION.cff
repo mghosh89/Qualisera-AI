@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this harness, please cite the working paper."
-title: "Qualisera QA Harness: Synthetic-First Pre-Deployment Validation"
+title: "QualiseraAI: Synthetic-First Pre-Deployment Validation"
 authors:
   - family-names: Ghosh
     given-names: Moumita

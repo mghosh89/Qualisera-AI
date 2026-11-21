@@ -1,45 +1,36 @@
-> **Proprietary software.** All rights are reserved; no rights to use, copy, modify, or
-> distribute the project are granted without written authorization. See
-> [PROPRIETARY.md](./PROPRIETARY.md). Third-party software, standards, and data
-> remain subject to their respective terms. No patent filing or grant is
-> represented.
+# QualiseraAI — Synthetic-First Pre-Deployment Validation
 
-## 📚 Supported Datasets
+QA harness for clinical AI workflows: load synthetic/FHIR/NIH test
+data → validate → exercise a mock inference API → render a dashboard.
 
-Qualisera AI supports multiple healthcare data sources for comprehensive testing:
+> ⚠️ This repo is the **open architecture** (loaders, mock API,
+> reporting, orchestration gate). The concrete clinical-plausibility
+> rules (§5.3) are proprietary and provided via `qualisera-core`.
 
-### 1. **Synthea™** (Recommended for Testing)
-- **Type**: Synthetic patient population
-- **Access**: Free, no credentials required
-- **Format**: CSV, FHIR JSON
-- **Setup**: Automatic (included in setup script)
+## 📖 Cite
+Ghosh, M. (2026). A Synthetic-First Quality Assurance Pipeline for
+Pre-Deployment Clinical AI Validation. Zenodo.
+https://doi.org/10.5281/zenodo.24312873
+USPTO Provisional App. No. 64/203,372 (filed 2026-11-20).
 
-### 2. **NIH Chest X-ray** (Medical Imaging)
-- **Type**: Chest X-ray images with disease labels
-- **Access**: Free download
-- **Format**: PNG images + CSV metadata
-- **Setup**: Download from [NIH](https://nihcc.app.box.com/v/ChestXray-NIHCC) or Kaggle
+## 🏗️ Flow (§5.6)
+loaders → [validators 🔒] → mock API → JUnit → dashboard
+                  ↑
+        orchestration gate (route / quarantine / reject)
 
-### 3. **FHIR Test Data** (Standard Healthcare API)
-- **Type**: HL7 FHIR standard resources
-- **Access**: Public FHIR servers
-- **Format**: FHIR JSON
-- **Setup**: Automatic from public servers
+## 🔐 Public vs private
+| Component | Public | Patent § |
+|---|---|---|
+| Loaders | ✅ | 5.2 |
+| Mock API | ✅ | 5.4 |
+| Dashboard | ✅ | 5.5 |
+| Gate | ✅ | 5.6 |
+| Validation rules | 🔒 | 5.3 |
 
-## 🚀 Quick Start with Different Datasets
+## 🤝 Related
+Built atop [Synthea](https://github.com/synthetichealth/synthea).
+See my MITRE contribution:
+[chatty-notes PR #3](https://github.com/synthetichealth/chatty-notes/pull/3).
 
-### Using Synthea (Default)
-```bash
-python run_qualisera.py --dataset synthea --patient-count 1000 --validate
-```
-
-## Run tests and view the dashboard
-
-```bash
-./run_tests.sh
-```
-
-The script runs the complete test suite and refreshes the results dashboard at
-[`reports/test_report.html`](./reports/test_report.html). Scenario names and
-positive/negative outcomes are documented in
-[`docs/Test_Scenarios.md`](./docs/Test_Scenarios.md).
+## 🚀 Run
+pip install -r requirements.txt && pytest -q
