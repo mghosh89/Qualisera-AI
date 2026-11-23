@@ -34,3 +34,6 @@ See my MITRE contribution:
 
 ## 🚀 Run
 pip install -r requirements.txt && pytest -q
+
+## 🛠️ Implementation Note
+This repository was developed using AI-assisted coding tools (GitHub Copilot) for syntax generation and boilerplate code. **All architecture, validation logic, patent claims, and clinical plausibility rules are the original work of the inventor (Moumita Ghosh).**
