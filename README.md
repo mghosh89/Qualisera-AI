@@ -11,6 +11,8 @@ data → validate → exercise a mock inference API → render a dashboard.
 Ghosh, M. (2026). A Synthetic-First Quality Assurance Pipeline for
 Pre-Deployment Clinical AI Validation. Zenodo.
 https://doi.org/10.5281/zenodo.24312873
+
+
 USPTO Provisional App. No. 64/203,372 (filed 2026-11-20).
 
 ## 🏗️ Flow (§5.6)
